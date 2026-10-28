@@ -50,6 +50,14 @@ The application will automatically detect standalone mode and use `localStorage`
 
 ---
 
+## 🌐 Public Demo (GitHub Pages)
+
+The static demo is deployed at **https://sahilhedau.github.io/Workshop-launchpad/**. It runs in the browser and does not use a hosted backend: dashboard changes stay in that browser, and the registration page is a preview only. It does not reserve seats or submit registration details. Use fictional sample information.
+
+The Node.js API and file persistence require running the server separately; GitHub Pages cannot host the Node.js backend.
+
+---
+
 ## 🧪 Running Automated Tests
 
 A comprehensive test suite verifies code generation, collision resistance, funnel arithmetic, pacing curves, non-destructive state switching, and attribution synchronization:

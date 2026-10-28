@@ -96,8 +96,8 @@
 <body>
   <div class="reg-wrap">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <a href="/" class="btn btn-secondary btn-sm">← Back to Workshop Launchpad</a>
-      <span class="badge badge-demo">Simulated Registration Gateway</span>
+      <a href="index.html" class="btn btn-secondary btn-sm">← Back to Workshop Launchpad</a>
+      <span class="badge badge-demo">Public Demo · No Real Registration</span>
     </div>
 
     <!-- Hero Card -->
@@ -131,26 +131,30 @@
     <div class="card" id="form-container">
       <div class="referrer-banner" id="referrer-info">
         <span>Attribution: <strong id="disp-ref-code">DIRECT</strong> (<span id="disp-ref-channel">General</span>)</span>
-        <span class="badge badge-live">Verified Link</span>
+        <span class="badge badge-live">Link Preview</span>
       </div>
 
       <div class="card-header">
         <div>
-          <h2 class="card-title">Reserve Your Seat (Free)</h2>
-          <p class="card-subtitle">Takes 30 seconds · Limited to 500 final-year engineers</p>
+          <h2 class="card-title">Try the Registration Demo</h2>
+          <p class="card-subtitle">This demo does not reserve a real workshop seat.</p>
         </div>
+      </div>
+
+      <div role="note" style="border: 1px solid var(--warning); border-radius: var(--radius-md); padding: 12px; margin-bottom: 16px; color: var(--text-primary);">
+        Public demo only: no registration is submitted or workshop seat reserved. Do not enter real personal information; use fictional sample details.
       </div>
 
       <form id="reg-form">
         <div class="form-group">
           <label for="student-name">Full Name *</label>
-          <input type="text" id="student-name" placeholder="e.g. Aditi Sharma" required>
+          <input type="text" id="student-name" placeholder="e.g. Demo Student" required>
         </div>
 
         <div class="grid grid-2">
           <div class="form-group">
             <label for="college-name">College / Institute *</label>
-            <input type="text" id="college-name" placeholder="e.g. VNR VJIET Hyderabad" required>
+            <input type="text" id="college-name" placeholder="e.g. Example College" required>
           </div>
           <div class="form-group">
             <label for="branch-name">Branch & Department *</label>
@@ -164,17 +168,11 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="whatsapp-num">WhatsApp Number (For workshop joining link) *</label>
-          <input type="text" id="whatsapp-num" placeholder="e.g. 9876543210" required>
-          <div class="input-helper">Privacy guaranteed: We only send the direct Google Meet / Zoom invite link.</div>
-        </div>
-
         <input type="hidden" id="hidden-ref-code" value="">
         <input type="hidden" id="hidden-ref-src" value="">
 
         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 10px;" id="submit-btn">
-          Complete Free Registration →
+          Preview Demo Confirmation →
         </button>
       </form>
     </div>
@@ -182,17 +180,17 @@
     <!-- Success Card (Initially Hidden) -->
     <div class="card confirmation-box hidden" id="success-container">
       <div class="conf-icon">🎉</div>
-      <h2 style="font-size: 22px; margin-bottom: 8px;">Registration Confirmed!</h2>
+      <h2 style="font-size: 22px; margin-bottom: 8px;">Demo Complete</h2>
       <p style="color: var(--text-secondary); max-width: 480px; margin: 0 auto 16px;">
-        Awesome, <strong id="conf-student-name"></strong>! Your seat for <strong>Build Your First AI Project in 60 Minutes</strong> is locked.
+        This is a preview only. No seat was reserved, and no registration details were submitted.
       </p>
 
       <div class="alert alert-success" style="text-align: left;">
         <div>
-          <div class="alert-title">Attribution Successfully Recorded</div>
+          <div class="alert-title">Sample Attribution Preview</div>
           <div class="alert-body">
             Attributed to referral code <code class="mono" id="conf-code"></code>. Registration ID: <code class="mono" id="conf-reg-id"></code>.
-            This simulated registration has been logged in Workshop Launchpad!
+            This sample was generated in your browser and was not saved or sent.
           </div>
         </div>
       </div>
@@ -216,7 +214,7 @@
       </div>
 
       <div style="margin-top: 24px;">
-        <a href="/" class="btn btn-primary">Open Live Campaign Dashboard →</a>
+        <a href="index.html" class="btn btn-primary">Open Campaign Dashboard →</a>
       </div>
     </div>
   </div>
@@ -269,6 +267,9 @@
 
       // Attempt to register via backend API
       try {
+        if (window.location.hostname.endsWith('.github.io')) {
+          throw new Error('Public GitHub Pages demo does not submit registrations.');
+        }
         const response = await fetch('/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -295,18 +296,19 @@
       const cleanInitials = (studentName.replace(/[^a-zA-Z]/g, '').toUpperCase() + 'STU').slice(0, 3);
       const randomSuffix = Math.random().toString(36).substring(2, 5).toUpperCase();
       const personalCode = `${cleanInitials}-${randomSuffix}`;
-      const personalUrl = `${window.location.origin}/register.html?ref=${personalCode}&src=ref`;
+      const personalUrl = new URL('register.html', window.location.href);
+      personalUrl.searchParams.set('ref', personalCode);
+      personalUrl.searchParams.set('src', 'ref');
 
       // Show confirmation
       document.getElementById('form-container').classList.add('hidden');
       document.getElementById('success-container').classList.remove('hidden');
-      document.getElementById('conf-student-name').textContent = studentName;
       document.getElementById('conf-code').textContent = code;
       document.getElementById('conf-reg-id').textContent = regId;
 
-      document.getElementById('personal-link').value = personalUrl;
+      document.getElementById('personal-link').value = personalUrl.href;
 
-      const waMsg = `Hey! I just registered for NxtWave's free live workshop: “Build Your First AI Project in 60 Minutes”. It's 100% hands-on and gives you a working AI project for your resume. Join with my invite link: ${personalUrl}`;
+      const waMsg = `Try this Workshop Launchpad registration demo: ${personalUrl.href}`;
       document.getElementById('share-wa-btn').onclick = () => {
         window.open(`https://wa.me/?text=${encodeURIComponent(waMsg)}`, '_blank');
       };

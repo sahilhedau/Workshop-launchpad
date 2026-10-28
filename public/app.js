@@ -51,6 +51,12 @@
   const $ = id => document.getElementById(id);
   const $$ = sel => document.querySelectorAll(sel);
 
+  function getRegistrationUrl(params = {}) {
+    const url = new URL('register.html', window.location.href);
+    Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+    return url.href;
+  }
+
   function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/[&<>"']/g, c => ({
@@ -365,7 +371,7 @@
       const label = $('in-label')?.value.trim();
       const channel = $('in-channel')?.value || 'wa';
       const college = $('in-college')?.value.trim() || 'General / Unspecified';
-      const baseUrl = $('in-target-url')?.value.trim() || `${window.location.origin}/register.html`;
+      const baseUrl = $('in-target-url')?.value.trim() || getRegistrationUrl();
 
       if (!label) {
         showToast('Please enter connector, club, or student name.', 'danger');
@@ -440,7 +446,7 @@
 
     updateMessageTemplate() {
       const template = $('msg-template-select')?.value || 'placement';
-      const url = this.currentTrackedUrl || `${window.location.origin}/register.html?ref=DEMO`;
+      const url = this.currentTrackedUrl || getRegistrationUrl({ ref: 'DEMO' });
       const connector = this.currentConnectorName || 'Aditi';
 
       let msg = '';
@@ -1045,7 +1051,7 @@
   };
 
   window.openTrackedLink = function (code, channel) {
-    const url = `${window.location.origin}/register.html?ref=${encodeURIComponent(code)}&src=${encodeURIComponent(channel)}`;
+    const url = getRegistrationUrl({ ref: code, src: channel });
     window.open(url, '_blank');
   };
 
