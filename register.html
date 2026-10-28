@@ -240,7 +240,7 @@
     document.getElementById('hidden-ref-src').value = refSrc;
 
     // Track click event if not direct
-    if (refCode !== 'DIRECT') {
+    if (refCode !== 'DIRECT' && !window.location.hostname.endsWith('.github.io')) {
       try {
         fetch('/api/click', {
           method: 'POST',

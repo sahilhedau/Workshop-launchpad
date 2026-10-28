@@ -51,6 +51,10 @@
   const $ = id => document.getElementById(id);
   const $$ = sel => document.querySelectorAll(sel);
 
+  function isGitHubPagesDemo() {
+    return window.location.hostname.endsWith('.github.io');
+  }
+
   function getRegistrationUrl(params = {}) {
     const url = new URL('register.html', window.location.href);
     Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
@@ -67,19 +71,21 @@
   // --- Storage Service ---
   const StorageService = {
     async init() {
-      try {
-        const res = await fetch('/api/state', { cache: 'no-cache' });
-        if (res.ok) {
-          const remoteState = await res.json();
-          if (remoteState && remoteState.links) {
-            state = remoteState;
-            isLiveBackend = true;
-            this.updateEnvBadge(true);
-            return;
+      if (!isGitHubPagesDemo()) {
+        try {
+          const res = await fetch('/api/state', { cache: 'no-cache' });
+          if (res.ok) {
+            const remoteState = await res.json();
+            if (remoteState && remoteState.links) {
+              state = remoteState;
+              isLiveBackend = true;
+              this.updateEnvBadge(true);
+              return;
+            }
           }
+        } catch (e) {
+          // Standalone or file:// mode
         }
-      } catch (e) {
-        // Standalone or file:// mode
       }
 
       // Fallback to localStorage
@@ -680,7 +686,23 @@
 
       // Export CSV
       $('btn-export-csv')?.addEventListener('click', () => {
-        window.location.href = '/api/export';
+        if (isLiveBackend) {
+          window.location.href = '/api/export';
+          return;
+        }
+        const rows = [
+          ['Code', 'Connector', 'Channel', 'College', 'Clicks', 'Registrations'],
+          ...state.links.map(link => [link.c, link.l, link.ch, link.k, link.clicks, link.n])
+        ];
+        const csv = rows.map(row =>
+          row.map(value => `"${String(value ?? '').replace(/"/g, '""')}"`).join(',')
+        ).join('\r\n');
+        const blobUrl = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+        const download = document.createElement('a');
+        download.href = blobUrl;
+        download.download = 'workshop-launchpad.csv';
+        download.click();
+        URL.revokeObjectURL(blobUrl);
       });
 
       this.initTheme();
