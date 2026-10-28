@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Build Your First AI Project in 60 Minutes | NxtWave Workshop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .reg-wrap {
+      max-width: 680px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    .hero-card {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(236, 72, 153, 0.15));
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--accent-primary);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    .hero-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .perks-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+      text-align: left;
+    }
+    @media (max-width: 600px) {
+      .perks-list { grid-template-columns: 1fr; }
+    }
+    .perk-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-size: 13px;
+    }
+    .perk-icon { font-size: 18px; margin-bottom: 4px; }
+    .referrer-banner {
+      background: var(--bg-tertiary);
+      border: 1px dashed var(--accent-primary);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+    .confirmation-box {
+      text-align: center;
+      padding: 32px 20px;
+    }
+    .conf-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    .viral-share-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 20px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="reg-wrap">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <a href="/" class="btn btn-secondary btn-sm">← Back to Workshop Launchpad</a>
+      <span class="badge badge-demo">Simulated Registration Gateway</span>
+    </div>
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+      <div class="hero-badge">Free Live Hands-on Masterclass</div>
+      <h1 class="hero-title">Build Your First AI Project in 60 Minutes</h1>
+      <p class="hero-desc">
+        Final-year placement special: Leave in 60 minutes with a working AI project you can show recruiters on your resume and GitHub.
+      </p>
+
+      <div class="perks-list">
+        <div class="perk-box">
+          <div class="perk-icon">⚡</div>
+          <strong>100% Hands-on Code</strong>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Deploy a live AI app before the session ends</div>
+        </div>
+        <div class="perk-box">
+          <div class="perk-icon">💼</div>
+          <strong>Placement Ready</strong>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Add an impressive AI project to your resume</div>
+        </div>
+        <div class="perk-box">
+          <div class="perk-icon">📜</div>
+          <strong>Verified Certificate</strong>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Free certificate & GitHub repo template</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration Form Card -->
+    <div class="card" id="form-container">
+      <div class="referrer-banner" id="referrer-info">
+        <span>Attribution: <strong id="disp-ref-code">DIRECT</strong> (<span id="disp-ref-channel">General</span>)</span>
+        <span class="badge badge-live">Verified Link</span>
+      </div>
+
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Reserve Your Seat (Free)</h2>
+          <p class="card-subtitle">Takes 30 seconds · Limited to 500 final-year engineers</p>
+        </div>
+      </div>
+
+      <form id="reg-form">
+        <div class="form-group">
+          <label for="student-name">Full Name *</label>
+          <input type="text" id="student-name" placeholder="e.g. Aditi Sharma" required>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label for="college-name">College / Institute *</label>
+            <input type="text" id="college-name" placeholder="e.g. VNR VJIET Hyderabad" required>
+          </div>
+          <div class="form-group">
+            <label for="branch-name">Branch & Department *</label>
+            <select id="branch-name" required>
+              <option value="CSE Final Year">B.Tech - Computer Science (CSE)</option>
+              <option value="IT Final Year">B.Tech - Information Technology (IT)</option>
+              <option value="ECE Final Year">B.Tech - Electronics & Comm (ECE)</option>
+              <option value="AI/DS Final Year">B.Tech - AI & Data Science</option>
+              <option value="MCA / Other">MCA / M.Tech / Other Engineering</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="whatsapp-num">WhatsApp Number (For workshop joining link) *</label>
+          <input type="text" id="whatsapp-num" placeholder="e.g. 9876543210" required>
+          <div class="input-helper">Privacy guaranteed: We only send the direct Google Meet / Zoom invite link.</div>
+        </div>
+
+        <input type="hidden" id="hidden-ref-code" value="">
+        <input type="hidden" id="hidden-ref-src" value="">
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; margin-top: 10px;" id="submit-btn">
+          Complete Free Registration →
+        </button>
+      </form>
+    </div>
+
+    <!-- Success Card (Initially Hidden) -->
+    <div class="card confirmation-box hidden" id="success-container">
+      <div class="conf-icon">🎉</div>
+      <h2 style="font-size: 22px; margin-bottom: 8px;">Registration Confirmed!</h2>
+      <p style="color: var(--text-secondary); max-width: 480px; margin: 0 auto 16px;">
+        Awesome, <strong id="conf-student-name"></strong>! Your seat for <strong>Build Your First AI Project in 60 Minutes</strong> is locked.
+      </p>
+
+      <div class="alert alert-success" style="text-align: left;">
+        <div>
+          <div class="alert-title">Attribution Successfully Recorded</div>
+          <div class="alert-body">
+            Attributed to referral code <code class="mono" id="conf-code"></code>. Registration ID: <code class="mono" id="conf-reg-id"></code>.
+            This simulated registration has been logged in Workshop Launchpad!
+          </div>
+        </div>
+      </div>
+
+      <!-- Viral Loop (Slide 2 Channel C in Action!) -->
+      <div class="viral-share-card">
+        <h3 style="font-size: 14px; margin-bottom: 6px;">🎁 Unlock the "AI Placement Cheatsheet"</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+          Share your personal invite link with 3 classmates. When they register, you both unlock the 50-Prompt AI Coding Cheatsheet & project template repo.
+        </p>
+
+        <label>Your Personal Referral Link</label>
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <input type="text" id="personal-link" readonly style="font-family: var(--font-mono); font-size: 12px;">
+          <button class="btn btn-secondary btn-sm" id="copy-personal-btn">Copy</button>
+        </div>
+
+        <button class="btn btn-success" style="width: 100%;" id="share-wa-btn">
+          Share on WhatsApp with Classmates 🚀
+        </button>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <a href="/" class="btn btn-primary">Open Live Campaign Dashboard →</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script>
+    // Parse URL params
+    const params = new URLSearchParams(window.location.search);
+    const refCode = (params.get('ref') || 'DIRECT').trim().toUpperCase();
+    const refSrc = (params.get('src') || 'wa').trim().toLowerCase();
+
+    const channelNames = {
+      wa: 'Campus WhatsApp Connector',
+      club: 'Club & Community',
+      ref: 'Student Peer Referral',
+      paid: 'Paid Test'
+    };
+
+    document.getElementById('disp-ref-code').textContent = refCode;
+    document.getElementById('disp-ref-channel').textContent = channelNames[refSrc] || 'General';
+    document.getElementById('hidden-ref-code').value = refCode;
+    document.getElementById('hidden-ref-src').value = refSrc;
+
+    // Track click event if not direct
+    if (refCode !== 'DIRECT') {
+      try {
+        fetch('/api/click', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: refCode })
+        }).catch(() => {});
+      } catch (e) {}
+    }
+
+    // Handle Form Submit
+    document.getElementById('reg-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing Registration...';
+
+      const studentName = document.getElementById('student-name').value.trim();
+      const college = document.getElementById('college-name').value.trim();
+      const branch = document.getElementById('branch-name').value;
+      const code = document.getElementById('hidden-ref-code').value;
+      const src = document.getElementById('hidden-ref-src').value;
+
+      let regId = 'REG-' + Math.floor(1000 + Math.random() * 9000);
+
+      // Attempt to register via backend API
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: code,
+            src: src,
+            studentName: studentName,
+            college: college,
+            branch: branch
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          regId = data.registrationId;
+        } else {
+          fallbackLocalStorage(code, studentName, college, branch);
+        }
+      } catch (err) {
+        fallbackLocalStorage(code, studentName, college, branch);
+      }
+
+      // Generate personal viral referral code for this new registrant (Channel C)
+      const cleanInitials = (studentName.replace(/[^a-zA-Z]/g, '').toUpperCase() + 'STU').slice(0, 3);
+      const randomSuffix = Math.random().toString(36).substring(2, 5).toUpperCase();
+      const personalCode = `${cleanInitials}-${randomSuffix}`;
+      const personalUrl = `${window.location.origin}/register.html?ref=${personalCode}&src=ref`;
+
+      // Show confirmation
+      document.getElementById('form-container').classList.add('hidden');
+      document.getElementById('success-container').classList.remove('hidden');
+      document.getElementById('conf-student-name').textContent = studentName;
+      document.getElementById('conf-code').textContent = code;
+      document.getElementById('conf-reg-id').textContent = regId;
+
+      document.getElementById('personal-link').value = personalUrl;
+
+      const waMsg = `Hey! I just registered for NxtWave's free live workshop: “Build Your First AI Project in 60 Minutes”. It's 100% hands-on and gives you a working AI project for your resume. Join with my invite link: ${personalUrl}`;
+      document.getElementById('share-wa-btn').onclick = () => {
+        window.open(`https://wa.me/?text=${encodeURIComponent(waMsg)}`, '_blank');
+      };
+
+      document.getElementById('copy-personal-btn').onclick = () => {
+        navigator.clipboard.writeText(personalUrl).then(() => {
+          showToast('Personal referral link copied!');
+        });
+      };
+    });
+
+    function fallbackLocalStorage(code, studentName, college, branch) {
+      try {
+        const stored = localStorage.getItem('lp_s');
+        if (stored) {
+          const state = JSON.parse(stored);
+          const link = state.links.find(l => l.c === code);
+          if (link) link.n = (link.n || 0) + 1;
+          const d = state.day || 4;
+          state.daily[d - 1] = (state.daily[d - 1] || 0) + 1;
+          localStorage.setItem('lp_s', JSON.stringify(state));
+        }
+      } catch (e) {}
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+  </script>
+</body>
+</html>

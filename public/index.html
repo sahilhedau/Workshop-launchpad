@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Workshop Launchpad | Growth Pacing & Attribution Platform</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-icon">🚀</div>
+        <div class="brand-title">
+          <h1>
+            Workshop Launchpad
+            <span class="badge badge-demo">DEMO DATA</span>
+            <span id="env-badge" class="badge badge-live">Checking Backend...</span>
+          </h1>
+          <p class="brand-subtitle">
+            Growth attribution & campaign pacing engine for NxtWave's “Build Your First AI Project in 60 Minutes” (Target: 500 registrations in 7 days · Budget: ₹2,000)
+          </p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <select id="scenario-select" style="width: auto; font-size: 12px; padding: 6px 10px;">
+          <option value="default">Scenario: Day 4 Fallback Trigger (262 / 300)</option>
+          <option value="on_track">Scenario: Day 4 On Track (312 / 300)</option>
+          <option value="behind">Scenario: Day 4 Severe Lag (220 / 300)</option>
+        </select>
+
+        <button class="btn btn-secondary btn-sm" id="btn-quick-sim">+ Simulate Lead</button>
+        <button class="btn btn-outline btn-sm" id="btn-export-csv" title="Download CSV">Export CSV</button>
+        <button class="btn btn-outline btn-sm" id="theme-toggle" title="Toggle Light/Dark Theme">🌙</button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-target="tab-dashboard" role="tab">
+        📊 2. Live Dashboard & Pacing
+      </button>
+      <button class="nav-tab" data-target="tab-studio" role="tab">
+        🔗 1. Link Studio
+      </button>
+      <button class="nav-tab" data-target="tab-funnel" role="tab">
+        📈 3. Funnel Model & Simulator
+      </button>
+      <button class="nav-tab" data-target="tab-gateway" role="tab">
+        📱 4. Registration Demo Gateway
+      </button>
+      <button class="nav-tab" data-target="tab-blueprint" role="tab">
+        📋 5. Strategy Alignment (5 Slides)
+      </button>
+    </nav>
+
+    <!-- ================================================================= -->
+    <!-- TAB 2: LIVE DASHBOARD & PACING (DEFAULT VIEW)                     -->
+    <!-- ================================================================= -->
+    <main id="tab-dashboard" class="tab-content">
+      <!-- Pacing Fallback Contingency Banner -->
+      <div id="pacing-alert-container" class="alert alert-warning">
+        <div>
+          <div class="alert-title">Calculating campaign pace...</div>
+          <div class="alert-body">Evaluating actual registrations against 7-day targets.</div>
+        </div>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="grid grid-4" style="margin-bottom: 20px;">
+        <div class="kpi-card">
+          <div class="kpi-label">Completed Registrations <span>Goal: 500</span></div>
+          <div class="kpi-value" id="kpi-total-regs">0</div>
+          <div class="kpi-subtext" id="kpi-goal-pct">0% of 500 goal</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Pace vs Target <span id="kpi-pace-target-label">vs Day 4 (300)</span></div>
+          <div class="kpi-value" id="kpi-pace-delta">0</div>
+          <div class="kpi-subtext">Cumulative variance</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Required Run Rate <span>Finish Strong</span></div>
+          <div class="kpi-value" id="kpi-run-rate">0 / day</div>
+          <div class="kpi-subtext" id="kpi-days-left">3 days remaining</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Viral Loop & CAC <span>Budget: ₹2,000</span></div>
+          <div class="kpi-value" id="kpi-viral-rate">20.6%</div>
+          <div class="kpi-subtext">Effective CAC: <strong id="kpi-cac">₹7.63</strong> (Target: ₹4.00)</div>
+        </div>
+      </div>
+
+      <!-- Pacing Chart Card -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Campaign Trajectory: Planned Pace vs Actual Registrations</h2>
+            <p class="card-subtitle">Cumulative progress curves against 7-day milestone schedule</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="eval-day-select" style="margin: 0; font-size: 12px; color: var(--text-muted);">Evaluation Point:</label>
+            <select id="eval-day-select" style="width: auto; font-size: 12px; padding: 5px 8px;"></select>
+          </div>
+        </div>
+
+        <div id="cumulative-chart" class="chart-container"></div>
+
+        <div style="margin-top: 18px;">
+          <h3 style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">
+            Daily Ingestion Volume (Registrations Added Each Day)
+          </h3>
+          <div id="daily-bar-chart"></div>
+        </div>
+      </div>
+
+      <!-- Channel Attribution & Leaderboard Grid -->
+      <div class="grid grid-2">
+        <!-- Channel Breakdown -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Acquisition Channel Attribution</h2>
+              <p class="card-subtitle">Registrations by source with click conversion rates</p>
+            </div>
+          </div>
+          <div id="channel-breakdown-list"></div>
+          <div class="input-helper" style="margin-top: 14px;">
+            Attribution is preserved via UTM parameters (<code>ref</code> & <code>src</code>) attached to each connector link.
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Referral Leaderboard</h2>
+              <p class="card-subtitle">Top connectors, clubs & student advocates</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-reset-data">Reset Demo</button>
+          </div>
+          <div id="leaderboard-list"></div>
+          <div class="input-helper" style="margin-top: 14px;">
+            Click <code>+1</code> or <code>+10</code> to simulate live registrations arriving through that connector link.
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Registration Audit Feed -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Live Registration Activity Stream (Simulated Ingestion)</h2>
+            <p class="card-subtitle">Real-time attribution log showing student branch, college & referral code</p>
+          </div>
+        </div>
+        <div id="recent-regs-feed"></div>
+      </div>
+    </main>
+
+    <!-- ================================================================= -->
+    <!-- TAB 1: LINK STUDIO                                                -->
+    <!-- ================================================================= -->
+    <section id="tab-studio" class="tab-content hidden">
+      <div class="grid grid-2">
+        <!-- Link Creator Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Create Trackable Campaign Link</h2>
+              <p class="card-subtitle">Generates unique referral code with built-in attribution</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="in-label">Who is sharing? (Connector name, club, or student advocate) *</label>
+            <input type="text" id="in-label" placeholder="e.g. Aditi Sharma (CSE-B) or AI Developer Club">
+          </div>
+
+          <div class="grid grid-2">
+            <div class="form-group">
+              <label for="in-channel">Channel Source *</label>
+              <select id="in-channel">
+                <option value="wa">Campus WhatsApp Connector (10 students)</option>
+                <option value="club">Club or Community (Coding/GDSC)</option>
+                <option value="ref">Student Referral (Viral Loop)</option>
+                <option value="paid">Paid Test Reserve (Meta/Instagram)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="in-college">College / Institute (Optional)</label>
+              <input type="text" id="in-college" placeholder="e.g. VNR VJIET Hyderabad">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="in-target-url">Workshop Landing URL</label>
+            <input type="url" id="in-target-url" value="http://localhost:3000/register.html">
+            <div class="input-helper">Points to registration gateway. Appends <code>?ref=CODE&src=CHANNEL</code> automatically.</div>
+          </div>
+
+          <button class="btn btn-primary" id="btn-generate-link" style="width: 100%; margin-top: 10px;">
+            Generate Tracked Link & WhatsApp Copy →
+          </button>
+
+          <div class="input-helper" style="margin-top: 12px;">
+            🔒 Privacy First: Code stores only connector label, college, and channel. Zero student PII is collected without explicit registration consent.
+          </div>
+        </div>
+
+        <!-- Ready to Share Output Card -->
+        <div class="card" id="link-output-card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Ready-to-Share Assets</h2>
+              <p class="card-subtitle">Generated campaign code & WhatsApp broadcast copy</p>
+            </div>
+            <span id="out-channel-badge" class="badge badge-channel wa">WhatsApp Connector</span>
+          </div>
+
+          <div class="form-group">
+            <label>Assigned Referral Code</label>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <code class="mono" id="out-code" style="font-size: 16px; font-weight: 700; color: var(--accent-primary);">ADI-7KQ</code>
+              <span class="badge badge-live">Active</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Full Tracked Campaign URL</label>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="out-url" readonly style="font-family: var(--font-mono); font-size: 11px;">
+              <button class="btn btn-secondary btn-sm" id="btn-copy-url">Copy</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="msg-template-select">WhatsApp Copy Angle</label>
+            <select id="msg-template-select" style="font-size: 12px; margin-bottom: 8px;">
+              <option value="placement">Angle 1: Placement Urgency ("Ship an AI project before your next interview")</option>
+              <option value="club">Angle 2: Club / Community Announcement ("Live hands-on build")</option>
+              <option value="peer">Angle 3: Peer Recommendation ("I just registered, join with me")</option>
+            </select>
+            <textarea id="out-message" rows="5" style="font-size: 12px; line-height: 1.45;"></textarea>
+          </div>
+
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-sm" id="btn-copy-msg">📋 Copy WhatsApp Message</button>
+            <button class="btn btn-success btn-sm" id="btn-open-wa">💬 Open WhatsApp Web</button>
+            <button class="btn btn-outline btn-sm" id="btn-test-link">🧪 Test Form Flow</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Links Directory Table -->
+      <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Campaign Link Directory</h2>
+            <p class="card-subtitle">All active tracked links, clicks, and attributed completions</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <input type="text" id="links-search" placeholder="Search connector, code, college..." style="width: 220px; font-size: 12px; padding: 5px 8px;">
+            <select id="links-filter" style="width: auto; font-size: 12px; padding: 5px 8px;">
+              <option value="all">All Channels</option>
+              <option value="wa">WhatsApp Connectors</option>
+              <option value="club">Clubs & Communities</option>
+              <option value="ref">Student Referrals</option>
+              <option value="paid">Paid Test Reserve</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Connector / Community</th>
+                <th>Channel</th>
+                <th>College</th>
+                <th>Clicks</th>
+                <th>Regs</th>
+                <th>Conv Rate</th>
+                <th>Quick Actions</th>
+              </tr>
+            </thead>
+            <tbody id="links-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 3: FUNNEL MODEL & SIMULATOR                                   -->
+    <!-- ================================================================= -->
+    <section id="tab-funnel" class="tab-content hidden">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Interactive Funnel Hypothesis Model</h2>
+            <p class="card-subtitle">Adjust reach and conversion assumptions to validate the 500-registration strategy</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btn-reset-funnel">Restore 507 Base Case</button>
+        </div>
+
+        <!-- Funnel Summary Banner -->
+        <div id="funnel-summary" class="alert alert-success">
+          <div>
+            <div class="alert-title">Funnel Projection: 507 Registrations (+7 Buffer)</div>
+            <div class="alert-body">Base case hypotheses meet the 500-registration target.</div>
+          </div>
+        </div>
+
+        <!-- Assumptions Table -->
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Channel / Stage</th>
+                <th>Audience Reach (Students)</th>
+                <th>Conversion Assumption</th>
+                <th>Projected Registrations</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <strong>A. WhatsApp via Campus Connectors</strong><br>
+                  <small style="color:var(--text-muted)">10 connectors × 500 students across college/placement groups</small>
+                </td>
+                <td><input type="number" id="f-r1" value="5000" min="0" step="100"></td>
+                <td>
+                  <div style="display:flex; align-items:center; gap: 4px;">
+                    <input type="number" id="f-c1" value="5" min="0" max="100" step="0.1"> <span>%</span>
+                  </div>
+                </td>
+                <td><strong class="mono" id="f-o1" style="font-size: 15px;">250</strong></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <strong>B. Clubs & Communities</strong><br>
+                  <small style="color:var(--text-muted)">Coding clubs, GDSC chapters, Discord & LinkedIn groups</small>
+                </td>
+                <td><input type="number" id="f-r2" value="3500" min="0" step="100"></td>
+                <td>
+                  <div style="display:flex; align-items:center; gap: 4px;">
+                    <input type="number" id="f-c2" value="4" min="0" max="100" step="0.1"> <span>%</span>
+                  </div>
+                </td>
+                <td><strong class="mono" id="f-o2" style="font-size: 15px;">140</strong></td>
+              </tr>
+
+              <tr style="background: var(--bg-tertiary);">
+                <td><strong>Wave 1 Direct Subtotal (A + B)</strong></td>
+                <td colspan="2"><span style="color:var(--text-muted)">Base pool of direct workshop registrations</span></td>
+                <td><strong class="mono" id="f-wave1" style="font-size: 15px; color: var(--accent-primary);">390</strong></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <strong>C. Referral Loop (Viral Multiplier)</strong><br>
+                  <small style="color:var(--text-muted)">Organic shares by Wave 1 registrants to unlock cheat sheet</small>
+                </td>
+                <td>
+                  <div style="display:flex; align-items:center; gap: 4px;">
+                    <span style="font-size: 12px; color:var(--text-muted)">Share Rate:</span>
+                    <input type="number" id="f-r3" value="25" min="0" max="100" step="1"> <span>%</span>
+                  </div>
+                </td>
+                <td>
+                  <div style="display:flex; align-items:center; gap: 4px;">
+                    <span style="font-size: 12px; color:var(--text-muted)">Avg Signups:</span>
+                    <input type="number" id="f-c3" value="1.2" min="0" step="0.1">
+                  </div>
+                </td>
+                <td><strong class="mono" id="f-o3" style="font-size: 15px;">117</strong></td>
+              </tr>
+
+              <tr style="background: rgba(245, 158, 11, 0.08);">
+                <td>
+                  <strong>Contingency: ₹800 Paid Test Reserve</strong><br>
+                  <small style="color:var(--text-muted)">Only activated if Day 4 is behind pace (&lt;270 regs)</small>
+                </td>
+                <td>
+                  <label style="display:flex; align-items:center; gap: 6px; cursor: pointer; margin:0;">
+                    <input type="checkbox" id="f-paid-toggle" style="width: auto;">
+                    <span>Activate ₹800 Reserve</span>
+                  </label>
+                </td>
+                <td>
+                  <div style="display:flex; align-items:center; gap: 4px;">
+                    <span style="font-size: 12px; color:var(--text-muted)">Assumed CPL: ₹</span>
+                    <input type="number" id="f-paid-cpl" value="16" min="5" max="100" step="1">
+                  </div>
+                </td>
+                <td><strong class="mono" id="f-opaid" style="font-size: 15px;">0</strong></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr style="font-size: 15px; font-weight: 800;">
+                <td colspan="3">Total Projected Registrations vs 500 Goal:</td>
+                <td><span class="mono" id="f-total" style="color: var(--accent-primary); font-size: 18px;">507</span></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="grid grid-2" style="margin-top: 20px;">
+          <div class="alert alert-info">
+            <div>
+              <div class="alert-title">Viral Loop Mechanics ($K$-Factor)</div>
+              <div class="alert-body">
+                Viral Coefficient $K = \text{Share Rate} \times \text{Signups Per Sharer} = 0.25 \times 1.2 = \mathbf{0.30}$.
+                A $K$ of 0.30 amplifies every 100 direct registrations with 30 additional referral sign-ups. Because $K < 1$, the loop is stable and realistic (sub-exponential viral decay), yielding exactly 117 incremental registrations on top of the 390 base.
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-warning">
+            <div>
+              <div class="alert-title">Hypothesis Validation Note (First 48 Hours)</div>
+              <div class="alert-body">
+                These numbers represent planned hypotheses, not observed campaign results. In a real rollout, actual click-through rates and connector conversion will be benchmarked on Days 1–2 to update this model in real time.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 4: REGISTRATION DEMO GATEWAY                                  -->
+    <!-- ================================================================= -->
+    <section id="tab-gateway" class="tab-content hidden">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Interactive Student Registration Simulator</h2>
+            <p class="card-subtitle">Experience how a student discovers, visits, and converts through an attributed link</p>
+          </div>
+          <a href="/register.html?ref=ADI-7KQ&src=wa" target="_blank" class="btn btn-secondary btn-sm">
+            Open Standalone Registration Page ↗
+          </a>
+        </div>
+
+        <div class="alert alert-info" style="margin-bottom: 20px;">
+          <div>
+            <div class="alert-title">How Attribution Tracking Works in Workshop Launchpad</div>
+            <div class="alert-body">
+              1. A connector shares a link: <code>/register.html?ref=ADI-7KQ&src=wa</code>.<br>
+              2. When a student opens the page, an HTTP click event is tracked for that code.<br>
+              3. When the student submits the form, the registration is credited to <strong>ADI-7KQ</strong>, the WhatsApp channel, and today's pacing total.<br>
+              4. A unique personal referral link is generated for the student to invite classmates, powering Channel C!
+            </div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+          <h3 style="font-size: 15px; margin-bottom: 12px;">Simulate Student Submission</h3>
+
+          <form id="sim-gateway-form" onsubmit="event.preventDefault(); window.bumpCode(document.getElementById('sim-gate-code').value, 1); showToast('Registration attributed and logged!', 'success');">
+            <div class="grid grid-2">
+              <div class="form-group">
+                <label>Select Campus Connector / Code</label>
+                <select id="sim-gate-code">
+                  <option value="ADI-7KQ">ADI-7KQ — Aditi Sharma (VNR VJIET - WhatsApp)</option>
+                  <option value="CHE-9PL">CHE-9PL — Chetan Verma (Gokaraju Rangaraju - WhatsApp)</option>
+                  <option value="BHA-3MX">BHA-3MX — Bhavna Patel (CBIT - WhatsApp)</option>
+                  <option value="COD-2RT">COD-2RT — CSE Coding Club (Club / Community)</option>
+                  <option value="GDS-8WN">GDS-8WN — GDSC Chapter (Club / Community)</option>
+                  <option value="STU-4ZA">STU-4ZA — Karthik Reddy (Student Referral Loop)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Sample Student Name</label>
+                <input type="text" value="Pooja Kulkarni" required>
+              </div>
+            </div>
+
+            <div class="grid grid-2">
+              <div class="form-group">
+                <label>Student College</label>
+                <input type="text" value="VNR VJIET Hyderabad" required>
+              </div>
+              <div class="form-group">
+                <label>Department / Branch</label>
+                <select>
+                  <option>B.Tech Computer Science (CSE Final Year)</option>
+                  <option>B.Tech Information Technology (IT)</option>
+                  <option>B.Tech Electronics (ECE)</option>
+                  <option>B.Tech AI & Data Science</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+              Submit Simulated Registration & Update Live Dashboard →
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 5: STRATEGY ALIGNMENT (5 SLIDES)                              -->
+    <!-- ================================================================= -->
+    <section id="tab-blueprint" class="tab-content hidden">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Growth Strategy Blueprint (5-Slide Presentation Alignment)</h2>
+            <p class="card-subtitle">Complete strategy overview matching "Growth Plan 500 Registrations in 7 Days.pptx"</p>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-bottom: 20px;">
+          <div class="card" style="margin: 0;">
+            <div class="badge badge-channel wa" style="margin-bottom: 8px;">Slide 1: Core Pitch</div>
+            <h3 style="font-size: 14px; margin-bottom: 6px;">Target Audience & Promise</h3>
+            <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.45;">
+              <strong>Who:</strong> Final-year B.Tech/BE students (CSE, IT, ECE, AI/DS) in placement season, tier-2/3 colleges.<br>
+              <strong>Insight:</strong> Resumes say "AI" but show no shipped project. Generic webinars get ignored.<br>
+              <strong>Promise:</strong> Leave in 60 minutes with a working AI project you can show recruiters.
+            </p>
+          </div>
+
+          <div class="card" style="margin: 0;">
+            <div class="badge badge-channel club" style="margin-bottom: 8px;">Slide 2: 3 Channels</div>
+            <h3 style="font-size: 14px; margin-bottom: 6px;">Distribution Channels</h3>
+            <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.45;">
+              <strong>A. Campus WhatsApp:</strong> 10 student connectors forward message & poster. Peer trust beats brand post.<br>
+              <strong>B. Clubs & Communities:</strong> Coding clubs & GDSC chapters with 30-sec demo clip.<br>
+              <strong>C. Referral Loop:</strong> Each registrant gets personal link. Top 3 referrers win prizes.
+            </p>
+          </div>
+
+          <div class="card" style="margin: 0;">
+            <div class="badge badge-channel paid" style="margin-bottom: 8px;">Slide 3: Budget & Timeline</div>
+            <h3 style="font-size: 14px; margin-bottom: 6px;">₹2,000 Budget Breakdown</h3>
+            <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.45;">
+              • Connector thank-yous (10 × ₹50): ₹500<br>
+              • Referral prizes (₹300/₹200/₹100): ₹600<br>
+              • Paid test reserve (conditional): ₹800<br>
+              • Buffer for UPI fees: ₹100<br>
+              <strong>Total: ₹2,000</strong> (Base CAC: ₹4/reg)
+            </p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 20px;">
+          <h3 style="font-size: 14px; margin-bottom: 8px;">7-Day Cumulative Milestone Schedule</h3>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Day</th>
+                  <th>Key Action</th>
+                  <th>Daily Target</th>
+                  <th>Cumulative Goal</th>
+                  <th>Pacing Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Day 1</td><td>Build kit, recruit 10 student connectors</td><td>40</td><td>40</td><td>Initial launch</td></tr>
+                <tr><td>Day 2</td><td>Wave 1: Connectors post in WhatsApp placement groups</td><td>80</td><td>120</td><td>Viral kick-off</td></tr>
+                <tr><td>Day 3</td><td>Wave 2: Clubs and student communities pitch</td><td>90</td><td>210</td><td>Community reach</td></tr>
+                <tr style="background: rgba(239, 68, 68, 0.08);">
+                  <td><strong>Day 4</strong></td>
+                  <td><strong>Midway Checkpoint; Fallback triggered if &lt;270</strong></td>
+                  <td>90</td>
+                  <td><strong>300</strong></td>
+                  <td><strong>Contingency Decision Gate</strong></td>
+                </tr>
+                <tr><td>Day 5</td><td>Referral prize push, social proof post</td><td>90</td><td>390</td><td>Referral amplification</td></tr>
+                <tr><td>Day 6</td><td>"Closes tomorrow" deadline urgency</td><td>60</td><td>450</td><td>Urgency push</td></tr>
+                <tr><td>Day 7</td><td>Last call and live session reminders</td><td>50</td><td><strong>500</strong></td><td>Final milestone</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <div>
+            <div class="alert-title">Interview Talking Point: Contingency & Decision Making</div>
+            <div class="alert-body">
+              “Growth is not about hoping assumptions hold true; it's about having pre-committed triggers. On Day 4, if registrations fall below 90% (270), we don't guess—we immediately deploy the ₹800 paid reserve, recruit 5 replacement connectors in lagging colleges, and activate referral spot prizes.”
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal for Simulation -->
+    <div id="sim-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+          <h3 style="font-size: 16px; font-weight:700;">Simulate Live Registration</h3>
+          <button class="btn btn-outline btn-sm" id="btn-close-modal">✕</button>
+        </div>
+
+        <form id="sim-form">
+          <div class="form-group">
+            <label for="sim-connector-select">Attributed Connector / Code</label>
+            <select id="sim-connector-select"></select>
+          </div>
+
+          <div class="form-group">
+            <label for="sim-count">Number of Registrations to Add</label>
+            <select id="sim-count">
+              <option value="1">+1 Registration</option>
+              <option value="5">+5 Registrations</option>
+              <option value="10">+10 Registrations</option>
+              <option value="25">+25 Registrations (Group Broadcast)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sim-college">Student College</label>
+            <input type="text" id="sim-college" value="VNR VJIET Hyderabad">
+          </div>
+
+          <div class="form-group">
+            <label for="sim-branch">Student Branch</label>
+            <select id="sim-branch">
+              <option>CSE Final Year</option>
+              <option>IT Final Year</option>
+              <option>ECE Final Year</option>
+              <option>AI & DS Final Year</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+            Log Registration to Live Dashboard →
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Toast Notifications Area -->
+    <div id="toast-container"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

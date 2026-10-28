@@ -1,0 +1,23 @@
+{
+  "name": "workshop-launchpad",
+  "version": "2.0.0",
+  "description": "Referral tracking, attribution, and live campaign pacing platform for NxtWave's 'Build Your First AI Project in 60 Minutes' workshop (500 registrations in 7 days).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node tests/run-tests.js"
+  },
+  "keywords": [
+    "growth-engineering",
+    "referral-attribution",
+    "campaign-pacing",
+    "funnel-model",
+    "nxtwave"
+  ],
+  "author": "Sahil (Growth Intern Candidate)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
